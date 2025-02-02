@@ -65,8 +65,8 @@ public class Main {
             switch (choice) {
                 case 1:
                     System.out.println("Book a flight");
-                    char seatRow = scanner.next().charAt(0);
-                    int seatNum = scanner.nextInt();
+                    // char seatRow = scanner.next().charAt(0);
+                    // int seatNum = scanner.nextInt();
                     printFlightDiagram(flight);
                     break;
                 case 2:
@@ -92,21 +92,22 @@ public class Main {
         int rows = 4;
 
         // print rows numbers
-        System.out.print("  ");
+        System.out.print("    ");
         for (int i = 0; i < cols; i++) {
-            System.out.print(i + 1 + "   ");
+            System.out.print(String.format("%-4d", i + 1));
         }
 
         try {
             System.out.println();
             // print flight diagram
             int seatIndex = 0;
+            String dash = "-";
 
             for (int i = 0; i < rows; i++) {
                 if (i == 0 || i == 2) {
                     // print aisle with "---" to match length of seat diagram
                     System.out.println(
-                            "   ----------------------------------------------------------------------------------- ");
+                            "   ----------------------------------------------------------------------------------------------------");
                 }
                 System.out.print((char) (65 + i) + " | ");
 
