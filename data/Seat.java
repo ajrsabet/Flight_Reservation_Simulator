@@ -1,27 +1,42 @@
 package data;
 
 public class Seat {
-    private int seatRow;
-    private int seatColumn;
+    private int seatId;
     private boolean isBooked;
     private String seatClass;
 
-    public seat(int seatRow, int seatColumn, boolean isBooked, String seatClass) {
-        this.seatRow = seatRow;
-        this.seatColumn = seatColumn;
-        this.isBooked = isBooked;
+    public Seat(int seatId, String seatClass) {
+        this.seatId = seatId;
         this.seatClass = seatClass;
+        this.isBooked = false;
     }
 
     // get seat number
     public int[] getSeatPosition() {
-        seatPosition = {seatRow, seatColumn};
+        int seatRow = seatId / 4;
+        char seatColumn = (char) (seatId % 4 + 65);
+        int[] seatPosition = { seatRow, seatColumn };
         return seatPosition;
+    }
+
+    // get seat ID
+    public int getId() {
+        return seatId;
     }
 
     // get is booked
     public boolean getIsBooked() {
-     
+        // System.out.println(isBooked);
+        return isBooked;
+    }
 
-    
+    // get class
+    public String getSeatClass() {
+        return seatClass;
+    }
+
+    // book seat
+    public void bookSeat() {
+        isBooked = true;
+    }
 }

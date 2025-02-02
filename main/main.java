@@ -6,8 +6,11 @@
 package main;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
-public class main {
+import data.*;
+
+public class Main {
     /*
      * -main.java
      * -Flight.java
@@ -20,8 +23,34 @@ public class main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean session = true;
+        Reservation reservation;
+        Passenger passenger;
+        Seat seat;
 
-        Flight flight = new Flight(100, 10, 20, 70);
+        final Flight flight = new Flight(100, 10, 20, 70);
+        final ArrayList<Passenger> passengers = new ArrayList<Passenger>();
+        final ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+
+        // populate 50 passengers with random reservations
+        for (int i = 0; i < 50; i++) {
+            boolean seatAvailable = false;
+            while (!seatAvailable) {
+                int seatIndex = (int) (Math.random() * flight.getCapacity());
+                seat = flight.getSeat(seatIndex);
+                if (!seat.getIsBooked()) {
+                    seatAvailable = true;
+                }
+            }
+            passenger = new Passenger(i + 1);
+            passengers.add(passenger);
+
+            int seatIndex = (int) (Math.random() * flight.getCapacity());
+            seat = flight.getSeat(seatIndex);
+            seat.bookSeat();
+
+            reservation = new Reservation(i + 1, flight, passenger, seat);
+            reservations.add(reservation);
+        }
 
         System.out.println("Welcome to the Flight Reservation System");
 
@@ -36,9 +65,12 @@ public class main {
             switch (choice) {
                 case 1:
                     System.out.println("Book a flight");
+                    char seatRow = scanner.next().charAt(0);
+                    int seatNum = scanner.nextInt();
+                    printFlightDiagram(flight);
                     break;
                 case 2:
-                    System.out.println("Cancel a flight");
+                    System.out.println("Your reservation has been cancelled");
                     break;
                 case 3:
                     System.out.println("Exiting the system");
@@ -50,6 +82,49 @@ public class main {
             }
         }
         scanner.close();
+    }
+
+    // print a 2d diagram of the flight with available seats using X for booked
+    // seats and O for available seats
+    public static void printFlightDiagram(Flight flight) {
+        Seat[] seats = flight.getSeats();
+        int cols = seats.length / 4;
+        int rows = 4;
+
+        // print rows numbers
+        System.out.print("  ");
+        for (int i = 0; i < cols; i++) {
+            System.out.print(i + 1 + "   ");
+        }
+
+        try {
+            System.out.println();
+            // print flight diagram
+            int seatIndex = 0;
+
+            for (int i = 0; i < rows; i++) {
+                if (i == 0 || i == 2) {
+                    // print aisle with "---" to match length of seat diagram
+                    System.out.println(
+                            "   ----------------------------------------------------------------------------------- ");
+                }
+                System.out.print((char) (65 + i) + " | ");
+
+                for (int j = 0; j < cols; j++) {
+                    // System.out.print("s");
+
+                    if (seats[seatIndex].getIsBooked()) {
+                        System.out.print("X | ");
+                    } else {
+                        System.out.print("O | ");
+                    }
+                    seatIndex++;
+                }
+                System.out.println();
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Error: " + e);
+        }
     }
 
 }
