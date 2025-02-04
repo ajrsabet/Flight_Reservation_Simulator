@@ -1,23 +1,26 @@
 // This class represents the airplane AND the flight. In reality, it would be split so that each airplane can have many flights. 
 package data;
 
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+
 public class Flight {
     private int flightId;
     private int capacity;
     private Seat[] seats;
 
-    public Flight(int capacity, int firstClass, int businessClass, int economyClass) {
+    public Flight(int capacity, int firstClass, int businessClass) {
         this.capacity = capacity;
         this.seats = new Seat[capacity];
         this.flightId = 1234;
 
         for (int i = 0; i < seats.length; i++) {
-            if (i < firstClass) {
-                seats[i] = new Seat(i + 1, "First Class");
-            } else if (i < firstClass + businessClass) {
-                seats[i] = new Seat(i + 1, "Business Class");
+            if ((i + 1) % 25 <= firstClass / 4) {
+                seats[i] = new Seat(1, i);
+            } else if ((i + 1) % 25 <= (businessClass + firstClass) / 4) {
+                seats[i] = new Seat(2, i);
             } else {
-                seats[i] = new Seat(i + 1, "Economy Class");
+                seats[i] = new Seat(3, i);
             }
         }
     }
@@ -39,6 +42,30 @@ public class Flight {
             System.out.println("Error: " + e);
         }
         return availableSeats;
+    }
+
+    // populate passengers with random reservations
+    public void populatePassengers(Passenger passenger, ArrayList<Passenger> passengers, Reservation reservation,
+            PriorityQueue<Reservation> reservations, Seat seat) {
+        for (int i = 0; i < 50; i++) {
+            boolean seatAvailable = false;
+            while (!seatAvailable) {
+                int seatIndex = (int) (Math.random() * getCapacity());
+                seat = getSeat(seatIndex);
+                if (!seat.getIsBooked()) {
+                    seatAvailable = true;
+                }
+            }
+            passenger = new Passenger(i + 1, "auto");
+            passengers.add(passenger);
+
+            int seatIndex = (int) (Math.random() * getCapacity());
+            seat = getSeat(seatIndex);
+            seat.bookSeat();
+
+            reservation = new Reservation(i + 1, this, passenger, seat);
+            reservations.add(reservation);
+        }
     }
 
     // get number of available seats
@@ -66,5 +93,13 @@ public class Flight {
 
     public int getId() {
         return flightId;
+    }
+
+    public int getRows() {
+        return 4;
+    }
+
+    public int getCols() {
+        return seats.length / 4;
     }
 }

@@ -1,80 +1,93 @@
-/*
-    Flight reservation system:
-    A flight reservation system is a software application that helps customers book flights, hotels, and rental cars.
-*/
+//     Flight reservation system:
+//     A flight reservation system is a software application that helps customers book flights, hotels, and rental cars.
 
 package main;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import data.*;
+import ui.*;
+import util.*;
 
 public class Main {
-    /*
-     * -main.java
-     * -Flight.java
-     * -Passenger.java
-     * -Ticket.java
-     * -FlightReservation.java
-     * -FlightReservationSystem.java
-     * -FlightReservationSystemTest.java
-     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean session = true;
-        Reservation reservation;
-        Passenger passenger;
-        Seat seat;
+        Reservation reservation = new Reservation(0, null, null, null);
+        Passenger passenger = new Passenger(0, "auto");
+        Seat seat = new Seat(0, 0);
+        Passenger thisUser = null;
 
-        final Flight flight = new Flight(100, 10, 20, 70);
+        final Flight flight = new Flight(100, 20, 20);
+        final PriorityQueue<Reservation> reservations = new PriorityQueue<>(new ReservationComparator());
         final ArrayList<Passenger> passengers = new ArrayList<Passenger>();
-        final ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+        ConsoleDisplay display = new ConsoleDisplay();
 
         // populate 50 passengers with random reservations
-        for (int i = 0; i < 50; i++) {
-            boolean seatAvailable = false;
-            while (!seatAvailable) {
-                int seatIndex = (int) (Math.random() * flight.getCapacity());
-                seat = flight.getSeat(seatIndex);
-                if (!seat.getIsBooked()) {
-                    seatAvailable = true;
-                }
-            }
-            passenger = new Passenger(i + 1);
-            passengers.add(passenger);
-
-            int seatIndex = (int) (Math.random() * flight.getCapacity());
-            seat = flight.getSeat(seatIndex);
-            seat.bookSeat();
-
-            reservation = new Reservation(i + 1, flight, passenger, seat);
-            reservations.add(reservation);
-        }
+        flight.populatePassengers(passenger, passengers, reservation, reservations, seat);
 
         System.out.println("Welcome to the Flight Reservation System");
 
         while (session) {
+            System.out.println("Main Menu");
             System.out.println("1. Book a flight");
-            System.out.println("2. Cancel a flight");
-            System.out.println("3. Exit");
+            System.out.println("2. View your reservations");
+            System.out.println("3. Cancel a reservation");
+            System.out.println("4. Exit");
+            System.out.println();
+            System.out.println("5. Boarding simulation");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
+            System.out.println();
 
             switch (choice) {
                 case 1:
                     System.out.println("Book a flight");
-                    // char seatRow = scanner.next().charAt(0);
-                    // int seatNum = scanner.nextInt();
-                    printFlightDiagram(flight);
+                    display.DisplayFlight(flight);
+                    System.out.print("Enter the seat row: ");
+                    int seatNum = scanner.nextInt();
+                    System.out.print("Enter the seat letter: ");
+                    char seatRow = scanner.next().charAt(0);
+                    int seatIndex = (Character.toUpperCase(seatRow) - 65) * 4 + seatNum - 1;
+
+                    if (flight.getSeat(seatIndex).getIsBooked()) {
+                        System.out.println("Seat is already booked");
+                    } else {
+                        System.out.print("Enter your name: ");
+                        String name = scanner.next();
+                        thisUser = new Passenger(passengers.size() + 1, name);
+                        passengers.add(thisUser);
+                        seat = flight.getSeat(seatIndex);
+                        seat.bookSeat();
+                        reservation = new Reservation(reservations.size() + 1, flight, thisUser, seat);
+                        reservations.add(reservation);
+                        System.out.println("Your reservation has been made");
+
+                    }
+                    System.out.println();
                     break;
                 case 2:
-                    System.out.println("Your reservation has been cancelled");
+                    System.out.println("Your reservations:");
+                    if (thisUser == null) {
+                        System.out.println("No reservations found");
+                    } else {
+                        thisUser.getReservations(reservations);
+                    }
+                    System.out.println();
                     break;
                 case 3:
+                    System.out.println("Your reservation has been cancelled");
+                    System.out.println();
+                    // press any key to continue
+
+                    break;
+                case 4:
                     System.out.println("Exiting the system");
                     session = false;
+                    System.out.println();
                     break;
                 default:
                     System.out.println("Invalid choice");
@@ -82,50 +95,6 @@ public class Main {
             }
         }
         scanner.close();
-    }
-
-    // print a 2d diagram of the flight with available seats using X for booked
-    // seats and O for available seats
-    public static void printFlightDiagram(Flight flight) {
-        Seat[] seats = flight.getSeats();
-        int cols = seats.length / 4;
-        int rows = 4;
-
-        // print rows numbers
-        System.out.print("    ");
-        for (int i = 0; i < cols; i++) {
-            System.out.print(String.format("%-4d", i + 1));
-        }
-
-        try {
-            System.out.println();
-            // print flight diagram
-            int seatIndex = 0;
-            String dash = "-";
-
-            for (int i = 0; i < rows; i++) {
-                if (i == 0 || i == 2) {
-                    // print aisle with "---" to match length of seat diagram
-                    System.out.println(
-                            "   ----------------------------------------------------------------------------------------------------");
-                }
-                System.out.print((char) (65 + i) + " | ");
-
-                for (int j = 0; j < cols; j++) {
-                    // System.out.print("s");
-
-                    if (seats[seatIndex].getIsBooked()) {
-                        System.out.print("X | ");
-                    } else {
-                        System.out.print("O | ");
-                    }
-                    seatIndex++;
-                }
-                System.out.println();
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error: " + e);
-        }
     }
 
 }

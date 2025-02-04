@@ -3,10 +3,14 @@ package data;
 public class Seat {
     private int seatId;
     private boolean isBooked;
-    private String seatClass;
+    private int seatClass;
+    // private char seatChar;
+    // private int seatNum;
 
-    public Seat(int seatId, String seatClass) {
+    public Seat(int seatClass, int seatId) {
         this.seatId = seatId;
+        // this.seatChar = seatChar;
+        // this.seatNum = seatNum;
         this.seatClass = seatClass;
         this.isBooked = false;
     }
@@ -31,7 +35,7 @@ public class Seat {
     }
 
     // get class
-    public String getSeatClass() {
+    public int getSeatClass() {
         return seatClass;
     }
 
