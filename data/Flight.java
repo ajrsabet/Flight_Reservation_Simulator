@@ -47,7 +47,7 @@ public class Flight {
     // populate passengers with random reservations
     public void populatePassengers(Passenger passenger, ArrayList<Passenger> passengers, Reservation reservation,
             PriorityQueue<Reservation> reservations, Seat seat) {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
             boolean seatAvailable = false;
             while (!seatAvailable) {
                 int seatIndex = (int) (Math.random() * getCapacity());

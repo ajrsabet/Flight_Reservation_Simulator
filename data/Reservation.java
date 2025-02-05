@@ -32,4 +32,5 @@ public class Reservation {
     public Seat getSeat() {
         return seat;
     }
+
 }

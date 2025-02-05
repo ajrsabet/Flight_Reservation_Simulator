@@ -13,7 +13,9 @@ import util.*;
 
 public class Main {
     public static void main(String[] args) {
+        InputTest inputTest = new InputTest();
         Scanner scanner = new Scanner(System.in);
+        TypeWriter typeWriter = new TypeWriter(1);
         boolean session = true;
         Reservation reservation = new Reservation(0, null, null, null);
         Passenger passenger = new Passenger(0, "auto");
@@ -28,73 +30,92 @@ public class Main {
         // populate 50 passengers with random reservations
         flight.populatePassengers(passenger, passengers, reservation, reservations, seat);
 
-        System.out.println("Welcome to the Flight Reservation System");
+        typeWriter.PrintLn("\nWelcome to the Flight Reservation System");
 
         while (session) {
-            System.out.println("Main Menu");
-            System.out.println("1. Book a flight");
-            System.out.println("2. View your reservations");
-            System.out.println("3. Cancel a reservation");
-            System.out.println("4. Exit");
-            System.out.println();
-            System.out.println("5. Boarding simulation");
-            System.out.print("Enter your choice: ");
+            typeWriter.PrintLn("\nMain Menu");
+            typeWriter.PrintLn("1. Book a flight");
+            typeWriter.PrintLn("2. View your reservations");
+            typeWriter.PrintLn("3. Cancel a reservation");
+            typeWriter.PrintLn("4. Boarding simulation");
+            typeWriter.PrintLn("5. Exit");
 
-            int choice = scanner.nextInt();
+            // get user choice
+            typeWriter.Print("\nEnter your choice: ");
+            int choice = inputTest.Int();
             System.out.println();
 
             switch (choice) {
+                // book a flight
                 case 1:
-                    System.out.println("Book a flight");
+                    typeWriter.PrintLn("\nBook a flight");
                     display.DisplayFlight(flight);
-                    System.out.print("Enter the seat row: ");
-                    int seatNum = scanner.nextInt();
-                    System.out.print("Enter the seat letter: ");
-                    char seatRow = scanner.next().charAt(0);
+                    typeWriter.Print("Enter the seat row: ");
+                    int seatNum = inputTest.Int();
+                    typeWriter.Print("Enter the seat letter: ");
+                    char seatRow = inputTest.Char();
                     int seatIndex = (Character.toUpperCase(seatRow) - 65) * 4 + seatNum - 1;
 
                     if (flight.getSeat(seatIndex).getIsBooked()) {
-                        System.out.println("Seat is already booked");
+                        typeWriter.PrintLn("Seat is already booked");
                     } else {
-                        System.out.print("Enter your name: ");
-                        String name = scanner.next();
+                        typeWriter.Print("Enter your name: ");
+                        String name = inputTest.String();
                         thisUser = new Passenger(passengers.size() + 1, name);
                         passengers.add(thisUser);
                         seat = flight.getSeat(seatIndex);
                         seat.bookSeat();
                         reservation = new Reservation(reservations.size() + 1, flight, thisUser, seat);
                         reservations.add(reservation);
-                        System.out.println("Your reservation has been made");
+                        typeWriter.PrintLn("Your reservation has been made");
 
                     }
                     System.out.println();
                     break;
+
+                // view reservations
                 case 2:
-                    System.out.println("Your reservations:");
+                    typeWriter.PrintLn("Your reservations:");
                     if (thisUser == null) {
-                        System.out.println("No reservations found");
+                        typeWriter.PrintLn("No reservations found");
                     } else {
                         thisUser.getReservations(reservations);
                     }
                     System.out.println();
                     break;
-                case 3:
-                    System.out.println("Your reservation has been cancelled");
-                    System.out.println();
-                    // press any key to continue
 
+                // cancel reservation
+                case 3:
+                    typeWriter.PrintLn("Your reservations:");
+                    if (thisUser == null) {
+                        typeWriter.PrintLn("No reservations found");
+                    } else {
+                        thisUser.getReservations(reservations);
+                        typeWriter.Print("Enter the reservation ID to cancel: ");
+                        int reservationId = inputTest.Int();
+                        Passenger.cancelReservation(reservations, reservationId, reservation);
+                        typeWriter.PrintLn("Your reservation has been cancelled");
+                        typeWriter.PrintLn("Press any key to continue");
+                        // press any key to continue
+                    }
                     break;
-                case 4:
-                    System.out.println("Exiting the system");
+
+                // exit
+                case 5:
+                    typeWriter.PrintLn("\nExiting the system");
                     session = false;
-                    System.out.println();
+                    break;
+
+                // boarding queue simulation
+                case 4:
+                    typeWriter.PrintLn("\nPrinting the boarding queue");
+                    display.DisplayBoardingQueue(reservations);
                     break;
                 default:
-                    System.out.println("Invalid choice");
+                    typeWriter.PrintLn("\nInvalid choice");
                     break;
             }
         }
-        scanner.close();
     }
 
 }

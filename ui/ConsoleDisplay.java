@@ -1,9 +1,16 @@
 package ui;
 
+import java.util.PriorityQueue;
+
 import data.Flight;
+import data.Passenger;
+import data.Reservation;
 import data.Seat;
+import util.TypeWriter;
 
 public class ConsoleDisplay {
+    private TypeWriter typeWriter = new TypeWriter(1);
+
     // print a 2d diagram of the flight with available seats using X for booked
     // seats and O for available seats
     public ConsoleDisplay() {
@@ -65,5 +72,28 @@ public class ConsoleDisplay {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Error: " + e);
         }
+    }
+
+    // display boarding queue
+    public void DisplayBoardingQueue(PriorityQueue<Reservation> reservations) {
+        typeWriter.PrintLn("Boarding Queue:");
+        for (Reservation reservation : reservations) {
+            DisplayReservation(reservation);
+        }
+    }
+
+    // display reservation
+    public void DisplayReservation(Reservation reservation) {
+        // get passenger name
+        String name = reservation.getPassenger().getName();
+        // get seat position
+        String seatPosition = reservation.getSeat().getSeatPosition();
+
+        typeWriter.PrintLn("Reservation ID: " + reservation.getId());
+        typeWriter.PrintLn("Passenger: " + name);
+        typeWriter.PrintLn("Flight ID: " + reservation.getFlight().getId());
+        typeWriter.PrintLn("Seat: " + seatPosition);
+        typeWriter.PrintLn("Seat Class: " + reservation.getSeat().getSeatClassString());
+        System.out.println();
     }
 }
